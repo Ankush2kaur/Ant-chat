@@ -1,7 +1,7 @@
 // PART ONE CODE 1 START \\
 
 // Initial chatbot setup and validation
-
+import languagesData from "./languages.js"
 let greetMessage;
 (function () {
   const aibotConfig = window.aibot_config || {};
@@ -17,6 +17,8 @@ let greetMessage;
   let language = aibotConfig.language || "en";
   let featureData = {}; // Store the dynamic feature data (both basic and advance)
   let featureKey;
+  let langCode;
+  let languageCode;
 
   // Utility function to create HTML elements
   function createElement(tag, className, attributes = {}, innerHTML = "") {
@@ -40,7 +42,7 @@ let greetMessage;
   minimizeButton.addEventListener("click", () => {
     // Check if the chatbot is minimized
     const isMinimized = chatbotContainer.classList.contains("minimized");
-  
+
     if (isMinimized) {
       // Expand the chatbot
       chatbotContainer.style.maxHeight = "80vh"; // Original height
@@ -67,24 +69,40 @@ let greetMessage;
     "label",
     "",
     { for: "language" },
-    "Select Language: "
+    "Detected Language: "
   );
+  langCode="bs"
+  languageCode= langCode;
+  const supportedLanguages = ["en", "hi", "fr", "es", "de"];
+  if (!supportedLanguages.includes(langCode)) {
+    supportedLanguages.push(langCode);
+  }
+  console.log(supportedLanguages);
   const languageDropdown = createElement("select", "");
-  ["en", "hi", "fr", "es", "de"].forEach((lang) => {
-    const option = createElement(
-      "option",
-      "",
-      { value: lang },
-      { en: "English", hi: "Hindi", fr: "French", es: "Spanish", de: "German" }[
-        lang
-      ]
-    );
-    languageDropdown.appendChild(option);
+
+  languagesData.text.forEach((lang) => {
+  
+  });
+
+  supportedLanguages.forEach((lang) => {
+    // Find the language in the languagesData text array
+    const language = languagesData.text.find(item => Object.keys(item)[0] === lang);
+     console.log("lang",language)
+    if (language) {
+      const languageName = language[lang]; // Get the language name from the JSON data
+      const option = createElement(
+        "option",
+        "",
+        { value: lang },
+        languageName 
+      );
+      languageDropdown.appendChild(option);
+    }
   });
   languageSelector.append(languageLabel, languageDropdown);
 
   // Set default language
-  languageDropdown.value = language;
+  languageDropdown.value = langCode;
 
   // Chat Window
   const chatWindow = createElement("div", "chat-window");
@@ -116,7 +134,7 @@ let greetMessage;
   const inputSection = createElement("div", "input-section");
   // const continueChat = createElement("button", "", {}, "Continue Chat");
   // continueChat.style.display = "none";
-   endChat = createElement("button", "", {}, "Speak With Expert");
+  endChat = createElement("button", "", {}, "Speak With Expert");
   endChat.style.display = "none";
   const loading = createElement("button", "", {}, "Thinking");
   loading.style.display = "none";
@@ -174,7 +192,7 @@ let greetMessage;
       name: nameField.value,
       email: emailField.value,
       phone: phoneField.value,
-      language,
+      language:languageCode,
     };
 
     const data = await apiRequest(
@@ -268,7 +286,7 @@ let greetMessage;
       }
     }
     if (response?.data?.features?.length) {
-       featureKey = Object.keys(response?.data?.features[0] || {})[0];
+      featureKey = Object.keys(response?.data?.features[0] || {})[0];
       console.log("Dynamic feature key:", featureKey);
       featureData = response?.data?.features[0][featureKey];
       console.log("feature Data", response?.data?.features);
@@ -422,7 +440,7 @@ let greetMessage;
       session_id: sessionId,
       features: [
         {
-         [featureKey]: {
+          [featureKey]: {
             basic: featureData.basic,
             advance: selectedFeatures.reduce((acc, feature) => {
               acc[feature] = true;
@@ -712,15 +730,46 @@ button:hover {
     translateContainer.id = "google_translate_element";
     document.body.appendChild(translateContainer);
 
+    const supportedLanguages = "en,hi,fr,es,de"; // Initial supported languages
+    const userLang = "te-us"; // Detect user's language (e.g., "de-DE")""
+    langCode = userLang.split("-")[0]; // Extract the language code (e.g., "de")
+
+    let updatedLanguages = supportedLanguages;
+
+    if (!supportedLanguages.includes(langCode)) {
+      updatedLanguages += `,${langCode}`;
+      console.log(`Added ${langCode} to the supported languages.`);
+    }
     new google.translate.TranslateElement(
       {
         pageLanguage: "en",
-        includedLanguages: "en,hi,fr,es,de",
+        includedLanguages: updatedLanguages,
         autoDisplay: false,
       },
       "google_translate_element"
     );
     console.log("Google Translate initialized.");
+    selectLanguage(langCode);
+  };
+  // Function to select the language in the dropdown
+  const selectLanguage = (lang) => {
+    const translateElementDropdown = document.querySelector(
+      "#google_translate_element select"
+    );
+    if (translateElementDropdown) {
+      const options = translateElementDropdown.options;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].value === lang) {
+          options[i].selected = true;
+          console.log("options", options[i].value);
+
+          translateElementDropdown.dispatchEvent(new Event("change")); // Trigger change event
+          break;
+        }
+      }
+    } else {
+      console.error("Google Translate element dropdown not found.");
+    }
   };
 
   // Add styles to hide Google Translate elements dynamically
@@ -790,7 +839,8 @@ button:hover {
         } else {
           console.error("Google Translate element dropdown not found.");
         }
-
+          languageLabel.textContent="Selected Language"
+          languageCode= selectedLang
         console.log(`Language changed to: ${selectedLang}`);
       });
     } else {

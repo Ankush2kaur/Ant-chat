@@ -1,0 +1,50 @@
+{
+    "en": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "antier": "Antier",
+        "detectedLanguage": "Detected Language",
+        "StartChat": "Start Chat"
+    },
+    "hi": {
+        "name": "नाम",
+        "email": "ईमेल",
+        "phone": "फोन",
+        "antier": "एंटीयर",
+        "detectedLanguage": "पता की गई भाषा",
+        "StartChat": "चैट शुरू करें"
+    },
+    "fr": {
+        "name": "Nom",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "antier": "Antier",
+        "detectedLanguage": "Langue détectée",
+        "StartChat": "Démarrer le chat"
+    },
+    "es": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "antier": "Antier",
+        "detectedLanguage": "Idioma detectado",
+        "StartChat": "Iniciar chat"
+    },
+    "de": {
+        "name": "Name",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "antier": "Antier",
+        "detectedLanguage": "Erkannte Sprache",
+        "StartChat": "Chat starten"
+    },
+    "bs": {
+        "name": "Ime",
+        "email": "Email",
+        "phone": "Telefon",
+        "antier": "Antier",
+        "detectedLanguage": "Prepoznati jezik",
+        "StartChat": "Započni razgovor"
+    }
+}
