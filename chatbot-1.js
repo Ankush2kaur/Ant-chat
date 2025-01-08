@@ -1,8 +1,8 @@
 // PART ONE CODE 1 START \\
 
 // Initial chatbot setup and validation
-import languagesData from "./languages.js"
-import languageConvert from './languageConvert.js';
+import languagesData from "./languages.js";
+import languageConvert from "./languageConvert.js";
 let greetMessage;
 (function () {
   const aibotConfig = window.aibot_config || {};
@@ -56,13 +56,14 @@ let greetMessage;
       chatbotContainer.classList.add("minimized");
     }
   });
-
+  langCode = "en";
   const logo = createElement("img", "", {
     src: "https://www.antiersolutions.com/wp-content/uploads/2019/03/favicon.png",
     alt: "Chatbot Logo",
   });
-  const title = createElement("h1", "",{ id: "title" }, "Antier Chatbot");
+  const title = createElement("h1", "", { id: "title" },languageConvert[langCode].antierChatbot);
   header.append(logo, title, minimizeButton);
+  
 
   // Language Selector
   const languageSelector = createElement("div", "language-selector");
@@ -70,12 +71,11 @@ let greetMessage;
     "label",
     "",
     { for: "language" },
-    "Detected Language: "
+    languageConvert[langCode].detectedLanguage
   );
   // langCode is fetched from navigator.language (later) ... but now hardcoded
-  langCode="bs"
   // initially store in languageCode(variable send to api)
-  languageCode= langCode;
+  languageCode = langCode;
   const supportedLanguages = ["en", "hi", "fr", "es", "de"];
   if (!supportedLanguages.includes(langCode)) {
     supportedLanguages.push(langCode);
@@ -85,16 +85,13 @@ let greetMessage;
 
   supportedLanguages.forEach((lang) => {
     // Find the language in the languagesData text array
-    const language = languagesData.text.find(item => Object.keys(item)[0] === lang);
-     console.log("lang",language)
+    const language = languagesData.text.find(
+      (item) => Object.keys(item)[0] === lang
+    );
+    console.log("lang", language);
     if (language) {
       const languageName = language[lang]; // Get the language name from the JSON data
-      const option = createElement(
-        "option",
-        "",
-        { value: lang },
-        languageName 
-      );
+      const option = createElement("option", "", { value: lang }, languageName);
       languageDropdown.appendChild(option);
     }
   });
@@ -103,45 +100,47 @@ let greetMessage;
   // Set default language
   languageDropdown.value = langCode;
 
-  setTimeout(() => {
-    updateFields(languageCode);
-  }, 0);
+  // setTimeout(() => {
+  //   updateFields(languageCode);
+  // }, 0);
   // Set default language
-// Log the initial selected language
-console.log("Initial language:", languageDropdown.value);
+  // Log the initial selected language
+  console.log("Initial language:", languageDropdown.value);
 
-// Add an event listener to track changes
-languageDropdown.addEventListener("change", (event) => {
-  const selectedLanguage = event.target.value;
-   languageLabel.textContent="Selected Language"
-   languageCode=selectedLanguage
-  // Get the newly selected language code
-  console.log("Selected language changed to:", selectedLanguage);
-  updateFields(languageCode)
-});
-// The rest of your code
-languageSelector.append(languageLabel, languageDropdown);
+  // Add an event listener to track changes
+  languageDropdown.addEventListener("change", (event) => {
+    const selectedLanguage = event.target.value;
+    // languageLabel.textContent = "Selected Language";
+    languageCode = selectedLanguage;
+    // Get the newly selected language code
+    console.log("Selected language changed to:", selectedLanguage);
+    updateFields(languageCode);
+  });
+  // The rest of your code
+  languageSelector.append(languageLabel, languageDropdown);
 
-//function to change the language 
-function updateFields(languageCode) {
-  const languageData = languageConvert[languageCode];
-  if (languageData) {
-    document.getElementById("name-field").placeholder = languageData.name;
-    document.getElementById("email-field").placeholder = languageData.email;
-    document.getElementById("phone-field").placeholder = languageData.phone;
-    document.getElementsByClassName("start-chat-button")[0].textContent = languageData.StartChat;
-    document.getElementById("title").textContent = languageData.antierChatbot;
-    const languageLabel = document.querySelector("label[for='language']");
-    // Update the text based on the current content
-    if (languageLabel.textContent === "Detected Language") {
-      languageLabel.textContent = languageData.detectedLanguage;
+  //function to change the language
+  function updateFields(languageCode) {
+    const languageData = languageConvert[languageCode];
+    if (languageData) {
+      document.getElementById("name-field").placeholder = languageData.name;
+      document.getElementById("email-field").placeholder = languageData.email;
+      document.getElementById("phone-field").placeholder = languageData.phone;
+      document.getElementsByClassName("start-chat-button")[0].textContent =
+        languageData.StartChat;
+      document.getElementById("title").textContent = languageData.antierChatbot;
+      const languageLabel = document.querySelector("label[for='language']");
+      console.log("languageLabel",languageLabel.textContent)
+      //Update the text based on the current content
+      if (languageLabel.textContent === "Detected Language") {
+        languageLabel.textContent = languageData.detectedLanguage;
+      } else {
+        languageLabel.textContent = languageData.SelectedLanguage;
+      }
     } else {
-      languageLabel.textContent = languageData.SelectedLanguage;
+      console.error("Language not supported:", languageCode);
     }
-  } else {
-    console.error("Language not supported:", languageCode);
   }
-}
   // Chat Window
   const chatWindow = createElement("div", "chat-window");
 
@@ -149,24 +148,24 @@ function updateFields(languageCode) {
   const detailsForm = createElement("div", "details-form");
   const nameField = createElement("input", "input-field", {
     type: "text",
-    placeholder: "Name",
-    id:"name-field"
+    placeholder: languageConvert[langCode].name,
+    id: "name-field",
   });
   const emailField = createElement("input", "input-field", {
     type: "email",
-    placeholder: "Email",
-    id:"email-field",
+    placeholder: languageConvert[langCode].email,
+    id: "email-field",
   });
   const phoneField = createElement("input", "input-field", {
     type: "tel",
-    placeholder: "Phone",
-    id:"phone-field"
+    placeholder:languageConvert[langCode].phone,
+    id: "phone-field",
   });
   const startChatButton = createElement(
     "button",
     "start-chat-button",
     {},
-    "Start Chat"
+    languageConvert[langCode].StartChat
   );
   startChatButton.disabled = true;
   detailsForm.append(nameField, emailField, phoneField, startChatButton);
@@ -196,9 +195,9 @@ function updateFields(languageCode) {
     inputSection
   );
   document.body.appendChild(chatbotContainer);
-  setTimeout(() => {
-    updateFields(languageCode);
-  }, 0);
+  // setTimeout(() => {
+  //   updateFields(languageCode);
+  // }, 0);
 
   // Helper function to handle API requests
   const apiRequest = async (url, method = "POST", payload = {}) => {
@@ -232,19 +231,20 @@ function updateFields(languageCode) {
   };
 
   startChatButton.addEventListener("click", async () => {
+      startChatButton.disabled="true"
+      startChatButton.textContent="Sending.."
     const userDetails = {
       name: nameField.value,
       email: emailField.value,
       phone: phoneField.value,
-      language:languageCode,
+      language: languageCode,
     };
 
     const data = await apiRequest(
-      "http://172.16.15.184:8001/api/v1/user-details",
+      "https://api-antierbot.antiers.work/api/v1/user-details",
       "POST",
       userDetails
     );
-
     inputField.addEventListener("keydown", async (event) => {
       if (event.key === "Enter" && inputField.value.trim()) {
         sendButton.click(); // Trigger the send button's click event
@@ -296,7 +296,7 @@ function updateFields(languageCode) {
       };
 
       const data = await apiRequest(
-        "http://172.16.15.184:8001/api/v1/chat",
+        "https://api-antierbot.antiers.work/api/v1/chat",
         "POST",
         payload
       );
@@ -327,6 +327,11 @@ function updateFields(languageCode) {
         Object.keys(response.user_options).length > 0
       ) {
         displayUserOptions(response.user_options);
+      }
+    }
+    if (response?.start_chat) {
+      if (response?.start_chat === "true") {
+        handleFinalMessage();
       }
     }
     if (response?.data?.features?.length) {
@@ -425,7 +430,7 @@ function updateFields(languageCode) {
       features: null,
     };
 
-    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
+    apiRequest("https://api-antierbot.antiers.work/api/v1/chat", "POST", payload).then(
       (data) => handleApiResponse(data)
     );
   }
@@ -496,7 +501,7 @@ function updateFields(languageCode) {
     };
     console.log("payload", payload);
 
-    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
+    apiRequest("https://api-antierbot.antiers.work/api/v1/chat", "POST", payload).then(
       (data) => displayFinalResponse(data)
     );
   }
@@ -506,25 +511,27 @@ function updateFields(languageCode) {
       response?.data?.messages[0]?.content || "Error fetching final response.",
       "bot"
     );
-    // minimizeButton.click();
-
-    if (response) {
-      inputField.style.display = "none";
-      sendButton.style.display = "none";
-      loading.style.display = "none";
-      // continueChat.style.display = "block";
-      // continueChat.style.width = "100%";
-      // continueChat.style.marginRight = "10px";
-      endChat.style.display = "block";
-      endChat.style.width = "100%";
-      endChat.addEventListener("click", function () {
-        updateChatWindow(
-          "I will forward your details to our technical team for further discussion. You can expect them to reach out to you shortly. Thank you for your patience.",
-          "bot"
-        );
-        endChat.disabled = true;
-      });
+    if (response?.start_chat) {
+      if (response?.start_chat === "true") {
+        handleFinalMessage();
+      }
     }
+    // minimizeButton.click();
+  }
+
+  function handleFinalMessage() {
+    inputField.style.display = "none";
+    sendButton.style.display = "none";
+    loading.style.display = "none";
+    endChat.style.display = "block";
+    endChat.style.width = "100%";
+    endChat.addEventListener("click", function () {
+      updateChatWindow(
+        "I will forward your details to our technical team for further discussion. You can expect them to reach out to you shortly. Thank you for your patience.",
+        "bot"
+      );
+      endChat.disabled = true;
+    });
   }
 
   // PART ONE CODE 1 END \\
@@ -817,22 +824,22 @@ button:hover {
   // };
 
   // Add styles to hide Google Translate elements dynamically
-//   const hideGoogleTranslateStyles = document.createElement("style");
-//   hideGoogleTranslateStyles.textContent = `
-//   #google_translate_element {
-//     display: none !important;
-//   }
-//   .goog-te-banner-frame,
-//   .goog-te-menu-frame {
-//     display: none !important;
-//   }
-//   body {
-//     top: 0 !important;
-//   }
-//   iframe {
-//     display: none;
-//   }
-// `;
+  //   const hideGoogleTranslateStyles = document.createElement("style");
+  //   hideGoogleTranslateStyles.textContent = `
+  //   #google_translate_element {
+  //     display: none !important;
+  //   }
+  //   .goog-te-banner-frame,
+  //   .goog-te-menu-frame {
+  //     display: none !important;
+  //   }
+  //   body {
+  //     top: 0 !important;
+  //   }
+  //   iframe {
+  //     display: none;
+  //   }
+  // `;
   // document.head.appendChild(hideGoogleTranslateStyles);
 
   // // Load Google Translate script
@@ -891,5 +898,4 @@ button:hover {
   //     console.error("Language dropdown not found.");
   //   }
   // });
-}
-)();
+})();
