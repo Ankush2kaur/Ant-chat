@@ -2,6 +2,7 @@
 
 // Initial chatbot setup and validation
 import languagesData from "./languages.js"
+import languageConvert from './languageConvert.js';
 let greetMessage;
 (function () {
   const aibotConfig = window.aibot_config || {};
@@ -60,7 +61,7 @@ let greetMessage;
     src: "https://www.antiersolutions.com/wp-content/uploads/2019/03/favicon.png",
     alt: "Chatbot Logo",
   });
-  const title = createElement("h1", "", {}, "Antier Chatbot");
+  const title = createElement("h1", "",{ id: "title" }, "Antier Chatbot");
   header.append(logo, title, minimizeButton);
 
   // Language Selector
@@ -71,7 +72,9 @@ let greetMessage;
     { for: "language" },
     "Detected Language: "
   );
+  // langCode is fetched from navigator.language (later) ... but now hardcoded
   langCode="bs"
+  // initially store in languageCode(variable send to api)
   languageCode= langCode;
   const supportedLanguages = ["en", "hi", "fr", "es", "de"];
   if (!supportedLanguages.includes(langCode)) {
@@ -79,10 +82,6 @@ let greetMessage;
   }
   console.log(supportedLanguages);
   const languageDropdown = createElement("select", "");
-
-  languagesData.text.forEach((lang) => {
-  
-  });
 
   supportedLanguages.forEach((lang) => {
     // Find the language in the languagesData text array
@@ -104,6 +103,45 @@ let greetMessage;
   // Set default language
   languageDropdown.value = langCode;
 
+  setTimeout(() => {
+    updateFields(languageCode);
+  }, 0);
+  // Set default language
+// Log the initial selected language
+console.log("Initial language:", languageDropdown.value);
+
+// Add an event listener to track changes
+languageDropdown.addEventListener("change", (event) => {
+  const selectedLanguage = event.target.value;
+   languageLabel.textContent="Selected Language"
+   languageCode=selectedLanguage
+  // Get the newly selected language code
+  console.log("Selected language changed to:", selectedLanguage);
+  updateFields(languageCode)
+});
+// The rest of your code
+languageSelector.append(languageLabel, languageDropdown);
+
+//function to change the language 
+function updateFields(languageCode) {
+  const languageData = languageConvert[languageCode];
+  if (languageData) {
+    document.getElementById("name-field").placeholder = languageData.name;
+    document.getElementById("email-field").placeholder = languageData.email;
+    document.getElementById("phone-field").placeholder = languageData.phone;
+    document.getElementsByClassName("start-chat-button")[0].textContent = languageData.StartChat;
+    document.getElementById("title").textContent = languageData.antierChatbot;
+    const languageLabel = document.querySelector("label[for='language']");
+    // Update the text based on the current content
+    if (languageLabel.textContent === "Detected Language") {
+      languageLabel.textContent = languageData.detectedLanguage;
+    } else {
+      languageLabel.textContent = languageData.SelectedLanguage;
+    }
+  } else {
+    console.error("Language not supported:", languageCode);
+  }
+}
   // Chat Window
   const chatWindow = createElement("div", "chat-window");
 
@@ -112,14 +150,17 @@ let greetMessage;
   const nameField = createElement("input", "input-field", {
     type: "text",
     placeholder: "Name",
+    id:"name-field"
   });
   const emailField = createElement("input", "input-field", {
     type: "email",
     placeholder: "Email",
+    id:"email-field",
   });
   const phoneField = createElement("input", "input-field", {
     type: "tel",
     placeholder: "Phone",
+    id:"phone-field"
   });
   const startChatButton = createElement(
     "button",
@@ -155,6 +196,9 @@ let greetMessage;
     inputSection
   );
   document.body.appendChild(chatbotContainer);
+  setTimeout(() => {
+    updateFields(languageCode);
+  }, 0);
 
   // Helper function to handle API requests
   const apiRequest = async (url, method = "POST", payload = {}) => {
@@ -196,7 +240,7 @@ let greetMessage;
     };
 
     const data = await apiRequest(
-      "http://192.168.10.38:8001/api/v1/user-details",
+      "http://172.16.15.184:8001/api/v1/user-details",
       "POST",
       userDetails
     );
@@ -252,7 +296,7 @@ let greetMessage;
       };
 
       const data = await apiRequest(
-        "http://192.168.10.38:8001/api/v1/chat",
+        "http://172.16.15.184:8001/api/v1/chat",
         "POST",
         payload
       );
@@ -381,7 +425,7 @@ let greetMessage;
       features: null,
     };
 
-    apiRequest("http://192.168.10.38:8001/api/v1/chat", "POST", payload).then(
+    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
       (data) => handleApiResponse(data)
     );
   }
@@ -452,7 +496,7 @@ let greetMessage;
     };
     console.log("payload", payload);
 
-    apiRequest("http://192.168.10.38:8001/api/v1/chat", "POST", payload).then(
+    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
       (data) => displayFinalResponse(data)
     );
   }
@@ -497,8 +541,8 @@ let greetMessage;
     --disabled-color: #ccc;
     --text-color: #000;
     --border-color: #ddd;
-    --message-bg-user: #d1e7dd;
-    --message-bg-bot:#62bff3;
+    --message-bg-user: #62bff3;
+    --message-bg-bot:#d9dee0;
   }
 
   .continue-button {
@@ -715,136 +759,137 @@ button:hover {
   // PART TWO CODE 2 END \\
 
   // Part 3: Integrate Google Translate dynamically (unchanged)
-  function loadGoogleTranslateScript(callback) {
-    const script = document.createElement("script");
-    script.src =
-      "https://translate.googleapis.com/translate_a/element.js?cb=googleTranslateInit";
-    script.async = true;
-    script.onload = callback;
-    document.head.appendChild(script);
-  }
+  // function loadGoogleTranslateScript(callback) {
+  //   const script = document.createElement("script");
+  //   script.src =
+  //     "https://translate.googleapis.com/translate_a/element.js?cb=googleTranslateInit";
+  //   script.async = true;
+  //   script.onload = callback;
+  //   document.head.appendChild(script);
+  // }
 
   // Initialize Google Translate
-  window.googleTranslateInit = () => {
-    const translateContainer = document.createElement("div");
-    translateContainer.id = "google_translate_element";
-    document.body.appendChild(translateContainer);
+  // window.googleTranslateInit = () => {
+  //   const translateContainer = document.createElement("div");
+  //   translateContainer.id = "google_translate_element";
+  //   document.body.appendChild(translateContainer);
 
-    const supportedLanguages = "en,hi,fr,es,de"; // Initial supported languages
-    const userLang = "te-us"; // Detect user's language (e.g., "de-DE")""
-    langCode = userLang.split("-")[0]; // Extract the language code (e.g., "de")
+  //   const supportedLanguages = "en,hi,fr,es,de"; // Initial supported languages
+  //   const userLang = "te-us"; // Detect user's language (e.g., "de-DE")""
+  //   langCode = userLang.split("-")[0]; // Extract the language code (e.g., "de")
 
-    let updatedLanguages = supportedLanguages;
+  //   let updatedLanguages = supportedLanguages;
 
-    if (!supportedLanguages.includes(langCode)) {
-      updatedLanguages += `,${langCode}`;
-      console.log(`Added ${langCode} to the supported languages.`);
-    }
-    new google.translate.TranslateElement(
-      {
-        pageLanguage: "en",
-        includedLanguages: updatedLanguages,
-        autoDisplay: false,
-      },
-      "google_translate_element"
-    );
-    console.log("Google Translate initialized.");
-    selectLanguage(langCode);
-  };
+  //   if (!supportedLanguages.includes(langCode)) {
+  //     updatedLanguages += `,${langCode}`;
+  //     console.log(`Added ${langCode} to the supported languages.`);
+  //   }
+  //   new google.translate.TranslateElement(
+  //     {
+  //       pageLanguage: "en",
+  //       includedLanguages: updatedLanguages,
+  //       autoDisplay: false,
+  //     },
+  //     "google_translate_element"
+  //   );
+  //   console.log("Google Translate initialized.");
+  //   selectLanguage(langCode);
+  // };
   // Function to select the language in the dropdown
-  const selectLanguage = (lang) => {
-    const translateElementDropdown = document.querySelector(
-      "#google_translate_element select"
-    );
-    if (translateElementDropdown) {
-      const options = translateElementDropdown.options;
-      for (let i = 0; i < options.length; i++) {
-        if (options[i].value === lang) {
-          options[i].selected = true;
-          console.log("options", options[i].value);
+  // const selectLanguage = (lang) => {
+  //   const translateElementDropdown = document.querySelector(
+  //     "#google_translate_element select"
+  //   );
+  //   if (translateElementDropdown) {
+  //     const options = translateElementDropdown.options;
+  //     for (let i = 0; i < options.length; i++) {
+  //       if (options[i].value === lang) {
+  //         options[i].selected = true;
+  //         console.log("options", options[i].value);
 
-          translateElementDropdown.dispatchEvent(new Event("change")); // Trigger change event
-          break;
-        }
-      }
-    } else {
-      console.error("Google Translate element dropdown not found.");
-    }
-  };
+  //         translateElementDropdown.dispatchEvent(new Event("change")); // Trigger change event
+  //         break;
+  //       }
+  //     }
+  //   } else {
+  //     console.error("Google Translate element dropdown not found.");
+  //   }
+  // };
 
   // Add styles to hide Google Translate elements dynamically
-  const hideGoogleTranslateStyles = document.createElement("style");
-  hideGoogleTranslateStyles.textContent = `
-  #google_translate_element {
-    display: none !important;
-  }
-  .goog-te-banner-frame,
-  .goog-te-menu-frame {
-    display: none !important;
-  }
-  body {
-    top: 0 !important;
-  }
-  iframe {
-    display: none;
-  }
-`;
-  document.head.appendChild(hideGoogleTranslateStyles);
+//   const hideGoogleTranslateStyles = document.createElement("style");
+//   hideGoogleTranslateStyles.textContent = `
+//   #google_translate_element {
+//     display: none !important;
+//   }
+//   .goog-te-banner-frame,
+//   .goog-te-menu-frame {
+//     display: none !important;
+//   }
+//   body {
+//     top: 0 !important;
+//   }
+//   iframe {
+//     display: none;
+//   }
+// `;
+  // document.head.appendChild(hideGoogleTranslateStyles);
 
-  // Load Google Translate script
-  loadGoogleTranslateScript(() => {
-    console.log("Google Translate script loaded.");
-  });
+  // // Load Google Translate script
+  // loadGoogleTranslateScript(() => {
+  //   console.log("Google Translate script loaded.");
+  // });
 
   // Ensure dynamic updates using Translate
-  document.addEventListener("DOMContentLoaded", () => {
-    const languageDropdown = document.querySelector(
-      ".language-selector select"
-    );
+  // document.addEventListener("DOMContentLoaded", () => {
+  //   const languageDropdown = document.querySelector(
+  //     ".language-selector select"
+  //   );
 
-    if (languageDropdown) {
-      languageDropdown.addEventListener("change", () => {
-        const selectedLang = languageDropdown.value;
+  //   if (languageDropdown) {
+  //     languageDropdown.addEventListener("change", () => {
+  //       const selectedLang = languageDropdown.value;
 
-        const hideGoogleTranslateStyles = document.createElement("style");
-        hideGoogleTranslateStyles.textContent = `
-        #google_translate_element {
-          display: none !important;
-        }
-        .goog-te-banner-frame,
-        .goog-te-menu-frame {
-          display: none !important;
-        }
-        body {
-          top: 0 !important;
-        }
-        iframe {
-          display: none;
-        }
-      `;
-        document.head.appendChild(hideGoogleTranslateStyles);
+  //       const hideGoogleTranslateStyles = document.createElement("style");
+  //       hideGoogleTranslateStyles.textContent = `
+  //       #google_translate_element {
+  //         display: none !important;
+  //       }
+  //       .goog-te-banner-frame,
+  //       .goog-te-menu-frame {
+  //         display: none !important;
+  //       }
+  //       body {
+  //         top: 0 !important;
+  //       }
+  //       iframe {
+  //         display: none;
+  //       }
+  //     `;
+  //       document.head.appendChild(hideGoogleTranslateStyles);
 
-        const translateElementDropdown = document.querySelector(
-          "#google_translate_element select"
-        );
-        if (translateElementDropdown) {
-          const options = translateElementDropdown.options;
-          for (let i = 0; i < options.length; i++) {
-            if (options[i].value === selectedLang) {
-              options[i].selected = true;
-              translateElementDropdown.dispatchEvent(new Event("change"));
-              break;
-            }
-          }
-        } else {
-          console.error("Google Translate element dropdown not found.");
-        }
-          languageLabel.textContent="Selected Language"
-          languageCode= selectedLang
-        console.log(`Language changed to: ${selectedLang}`);
-      });
-    } else {
-      console.error("Language dropdown not found.");
-    }
-  });
-})();
+  //       const translateElementDropdown = document.querySelector(
+  //         "#google_translate_element select"
+  //       );
+  //       if (translateElementDropdown) {
+  //         const options = translateElementDropdown.options;
+  //         for (let i = 0; i < options.length; i++) {
+  //           if (options[i].value === selectedLang) {
+  //             options[i].selected = true;
+  //             translateElementDropdown.dispatchEvent(new Event("change"));
+  //             break;
+  //           }
+  //         }
+  //       } else {
+  //         console.error("Google Translate element dropdown not found.");
+  //       }
+  //         languageLabel.textContent="Selected Language"
+  //         languageCode= selectedLang
+  //       console.log(`Language changed to: ${selectedLang}`);
+  //     });
+  //   } else {
+  //     console.error("Language dropdown not found.");
+  //   }
+  // });
+}
+)();

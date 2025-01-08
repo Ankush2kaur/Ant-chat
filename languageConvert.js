@@ -1,11 +1,13 @@
-{
+const languageConvert = {
     "en": {
         "name": "Name",
         "email": "Email",
         "phone": "Phone",
         "antier": "Antier",
         "detectedLanguage": "Detected Language",
-        "StartChat": "Start Chat"
+        "StartChat": "Start Chat",
+        "SelectedLanguage": "Selected Language",
+        "antierChatbot": "Antier Chatbot" 
     },
     "hi": {
         "name": "नाम",
@@ -13,7 +15,9 @@
         "phone": "फोन",
         "antier": "एंटीयर",
         "detectedLanguage": "पता की गई भाषा",
-        "StartChat": "चैट शुरू करें"
+        "StartChat": "चैट शुरू करें",
+        "SelectedLanguage": "चयनित भाषा",
+        "antierChatbot": "एंटीयर चैटबोट" 
     },
     "fr": {
         "name": "Nom",
@@ -21,7 +25,9 @@
         "phone": "Téléphone",
         "antier": "Antier",
         "detectedLanguage": "Langue détectée",
-        "StartChat": "Démarrer le chat"
+        "StartChat": "Démarrer le chat",
+        "SelectedLanguage": "Langue sélectionnée",
+        "antierChatbot": "Antier Chatbot"
     },
     "es": {
         "name": "Nombre",
@@ -29,7 +35,9 @@
         "phone": "Teléfono",
         "antier": "Antier",
         "detectedLanguage": "Idioma detectado",
-        "StartChat": "Iniciar chat"
+        "StartChat": "Iniciar chat",
+        "SelectedLanguage": "Idioma seleccionado",
+        "antierChatbot": "Antier Chatbot" 
     },
     "de": {
         "name": "Name",
@@ -37,7 +45,9 @@
         "phone": "Telefon",
         "antier": "Antier",
         "detectedLanguage": "Erkannte Sprache",
-        "StartChat": "Chat starten"
+        "StartChat": "Chat starten",
+        "SelectedLanguage": "Ausgewählte Sprache",
+        "antierChatbot": "Antier Chatbot" 
     },
     "bs": {
         "name": "Ime",
@@ -45,6 +55,10 @@
         "phone": "Telefon",
         "antier": "Antier",
         "detectedLanguage": "Prepoznati jezik",
-        "StartChat": "Započni razgovor"
+        "StartChat": "Započni razgovor",
+        "SelectedLanguage": "Odabrani jezik",
+        "antierChatbot": "Antier Chatbot" 
     }
 }
+
+export default languageConvert;
