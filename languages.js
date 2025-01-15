@@ -11,6 +11,7 @@
     { "cs": "Czech" },
     { "da": "Danish" },
     { "nl": "Dutch" },
+    {"tr": "Turkish"},
     { "en": "English" },
     { "et": "Estonian" },
     { "tl": "Filipino" },

@@ -221,6 +221,19 @@ let greetMessage;
     );
     const phoneValid = /^\+?[1-9]\d{1,14}$/.test(phoneField.value);
     startChatButton.disabled = !(nameField.value && emailValid && phoneValid);
+     // Add/remove the invalid class based on email validity
+     if (!emailValid && emailField.value.trim() !== "") {
+      emailField.classList.add("invalid-input"); // Add red border if invalid
+    } else {
+      emailField.classList.remove("invalid-input"); // Remove red border if valid
+    }
+  
+    // Validate phone field
+    if (!phoneValid && phoneField.value.trim() !== "") {
+      phoneField.classList.add("invalid-input"); // Add red border if invalid
+    } else {
+      phoneField.classList.remove("invalid-input"); // Remove red border if valid
+    }
   };
 
   // Update chat window with new messages
@@ -241,7 +254,7 @@ let greetMessage;
     };
 
     const data = await apiRequest(
-      "https://api-antierbot.antiers.work/api/v1/user-details",
+      "http://172.16.15.184:8001/api/v1/user-details",
       "POST",
       userDetails
     );
@@ -266,14 +279,36 @@ let greetMessage;
       updateChatWindow("Failed to submit details. Please try again.", "bot");
     }
   });
-
-  nameField.addEventListener("input", validateFields);
+    
+  // event listeners for inputs
+  // nameField.addEventListener("input", validateFields);
   emailField.addEventListener("input", validateFields);
   phoneField.addEventListener("input", validateFields);
 
+  emailField.addEventListener("blur", function () {
+    const emailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailField.value);
+    if (!emailValid) {
+      emailField.classList.add("invalid-input");
+    } else {
+      emailField.classList.remove("invalid-input");
+    }
+  });
+  
+  phoneField.addEventListener("blur", function () {
+    const phoneValid = /^\+?[1-9]\d{1,14}$/.test(phoneField.value);
+    if (!phoneValid) {
+      phoneField.classList.add("invalid-input");
+    } else {
+      phoneField.classList.remove("invalid-input");
+    }
+  });
+
+  
+  nameField.addEventListener("input", validateFields);
   inputField.addEventListener("input", function () {
     sendButton.disabled = !inputField.value.trim();
   });
+  
 
   sendButton.addEventListener("click", async () => {
     sendButton.style.display = "none";
@@ -296,7 +331,7 @@ let greetMessage;
       };
 
       const data = await apiRequest(
-        "https://api-antierbot.antiers.work/api/v1/chat",
+        "http://172.16.15.184:8001/api/v1/chat",
         "POST",
         payload
       );
@@ -352,10 +387,9 @@ let greetMessage;
       );
     }
   }
-
-  let isUserOptionsApiCalled = false;
-
   function displayUserOptions(userOptions) {
+    let isUserOptionsApiCalled = false;
+    
     console.log("Displaying user options:", userOptions);
 
     let optionsContainer = document.getElementById("optionsContainer");
@@ -430,7 +464,7 @@ let greetMessage;
       features: null,
     };
 
-    apiRequest("https://api-antierbot.antiers.work/api/v1/chat", "POST", payload).then(
+    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
       (data) => handleApiResponse(data)
     );
   }
@@ -501,7 +535,7 @@ let greetMessage;
     };
     console.log("payload", payload);
 
-    apiRequest("https://api-antierbot.antiers.work/api/v1/chat", "POST", payload).then(
+    apiRequest("http://172.16.15.184:8001/api/v1/chat", "POST", payload).then(
       (data) => displayFinalResponse(data)
     );
   }
@@ -741,6 +775,10 @@ button:hover {
     background: var(--disabled-color);
     cursor: not-allowed;
   }
+.details-form .input-field.invalid-input{
+border: 2px solid red !important;
+}
+
 
   @media (max-width: 480px) {
     .chatbot-container {
